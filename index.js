@@ -1,20 +1,21 @@
   // Dependencies
-  const express = require('express')
-  // const contapyme = require('./src/contapyme')
-  const bodyParser = require('body-parser');
+const express = require('express')
+// const products = require('./controllers/products')
+// const customers = require('./controllers/customers')
+// const orders = require('./controllers/orders')
+// const contapyme = require('./controllers/contapyme')
 
-  // App definition
-  const app = express()
-  app.use(bodyParser.json())
-  app.use(bodyParser.urlencoded({ extended: true }))
+const app = express()
 
-  const api = express.Router()
+// products(app)
+// customers(app)
+// orders(app)
 
-  app.post('/api/order', (req, res) => {
-    let {code, name, price1, quantity} = req.body
-    res.send(`el codigo es ${code} y el nombre ${name}`)
-  })
+app.get('/', (req, res) => {
+  res.send('Proveedor Api')
+})
+// contapyme.GetProducts()
 
-  // app.listen(3000, function () {
-  //     console.log('Making some pancakes on port 3000')
-  // });
+app.listen(3000, function () {
+  console.log('Making some pancakes on port 3000')
+});
