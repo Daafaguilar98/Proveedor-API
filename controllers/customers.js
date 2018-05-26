@@ -7,7 +7,7 @@ module.exports = function (app) {
     const urlHttp = 'http://186.115.207.187:9000/datasnap/rest/TCatTerceros/GetListaTerceros/';
     const urlData = JSON.stringify({
       datospagina: {
-        cantidadregistros: 200,
+        cantidadregistros: 9999,
         pagina: 1,
       },
       camposderetorno: ['init', 'ntercero', 'napellido'],
