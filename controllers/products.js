@@ -67,7 +67,6 @@ module.exports = function (app) {
       let result = {
         quantity: 0
       }
-      console.log(response.data.result[0].respuesta.datos[0])
       if (response.data.result[0].respuesta.datos[0]) {
         result.quantity = response.data.result[0].respuesta.datos[0].qproducto
       }
