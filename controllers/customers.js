@@ -10,7 +10,7 @@ module.exports = function (app) {
         cantidadregistros: 9999,
         pagina: 1,
       },
-      camposderetorno: ['init', 'ntercero', 'napellido'],
+      camposderetorno: ['init', 'ntercero', 'napellido', 'ilistaprecios'],
       ordenarpor: { ntercero: 'asc' },
     });
     const URL = `${urlHttp}${urlData}/${token.hash}/2000`;
@@ -18,7 +18,8 @@ module.exports = function (app) {
       let customers = response.data.result[0].respuesta.datos.map(customer => {
         return {
           name: `${customer.ntercero} ${customer.napellido}`,
-          id_number: customer.init
+          id_number: customer.init,
+          type_price: customer.ilistaprecios
         }
       })
       res.send(customers)
