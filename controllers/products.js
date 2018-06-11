@@ -56,6 +56,17 @@ module.exports = function (app) {
     }
   })
 
+  app.get('/products/:id', (req, res) => {
+    const urlHttp = 'http://186.115.207.187:9000/datasnap/rest/TCatElemInv/GetInfoElemInv/';
+    const urlData = JSON.stringify({
+      irecurso: req.params.id
+    });
+    const URL = `${urlHttp}${urlData}/${token.hash}/2000`;
+    axios.get(URL).then((response) => {
+      res.send(response.data.result[0].respuesta.datos)
+    })
+  })
+
   app.post('/products/quantity', (req, res) => {
     const urlHttp = 'http://186.115.207.187:9000/datasnap/rest/TInventarios/GetSaldoFisicoProductoEnBodegas/'
     const urlData = JSON.stringify({
