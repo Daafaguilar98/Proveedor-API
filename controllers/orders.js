@@ -2,6 +2,15 @@
 const axios = require('axios')
 const token = require('../helpers/tokenContapyme')
 
+const date = () => {
+  const dateObj = new Date();
+  const day = `0${dateObj.getDate()}`.slice(-2);
+  const month = `0${dateObj.getUTCMonth() + 1}`.slice(-2); // months from 1-12
+  const year = dateObj.getUTCFullYear();
+
+  return `${month}-${day}-${year}`;
+};
+
 module.exports = function (app) {
   app.get('/orders', (req, res) => {
     const URL = 'http://186.115.207.187:9000/datasnap/rest/TCatOperaciones/GetListaOperaciones/';
@@ -50,6 +59,7 @@ module.exports = function (app) {
     });
   })
 
+  // CREATE ORDER
   app.post('/order', (req, res) => {
     const URL = 'http://186.115.207.187:9000/datasnap/rest/TCatOperaciones/DoExecuteOprAction/';
     const data = JSON.stringify({
@@ -61,12 +71,12 @@ module.exports = function (app) {
       ],
       oprdata: {
         datosprincipales: {
-          init: '', // Identificacion del cliente
-          initvendedor: '', // Identificacion del vendedor
+          init: req.body.customer.id_number.toString(), // Identificacion del cliente
+          initvendedor: req.body.seller, // Identificacion del vendedor
           iinventario: '1',
           finicio: date(), // Fecha en que se empieza a preparar el pedido
           qdias: '1', // Dias habiles de entrega
-          ilistaprecios: '2', // Lista de precios
+          ilistaprecios: req.body.customer.type_price.toString(), // Lista de precios
           sobservenc: '', // Observaciones del pedido
           bregvrunit: 'F', // Es posible registrar los precios de los elementos
           qporcdescuento: '0', // Porcentaje de descuento
@@ -93,18 +103,32 @@ module.exports = function (app) {
           banulada: 'F', // Esta anulada
           inumsop: '0', // Numero de documento
           snumsop: '<AUTO>', // Numero de documento segun la mascara
-          tdetalle: 'Hecha desde api el proveedor', // Descripcion de la operacion
+          tdetalle: 'Hecha desde la app el proveedor', // Descripcion de la operacion
         },
         liquidacion: {
           parcial: '0',
           iva: '0',
           total: '0',
         },
-        listaproductos: [],
+        listaproductos: req.body.products.map(product => {
+          return {
+            iinventario: '1',
+            irecurso: product.code,
+            itiporec: "",
+            qrecurso: product.quantity,
+            mprecio: product.price.toString(),
+            qporcdescuento: 0,
+            qporciva: "0",
+            mvrtotal: (product.quantity*product.price).toString(),
+            sobserv: "",
+          }
+        }),
       },
     });
     const URLwithData = `${URL}${data}/${token.hash}/2000`;
-    axios.get(URLwithData);
+    axios.get(URLwithData).then((response) => {
+      res.send(response.data)
+    });
   })
 
 }
