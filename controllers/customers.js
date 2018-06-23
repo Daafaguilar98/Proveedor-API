@@ -25,4 +25,25 @@ module.exports = function (app) {
       res.send(customers)
     })
   })
+
+  app.get('/customers/:code', (req, res) => {
+    const urlHttp = 'http://186.115.207.187:9000/datasnap/rest/TCatTerceros/GetInfoTercero/';
+    const urlData = JSON.stringify({
+      init: req.params.code
+    });
+    const URL = `${urlHttp}${urlData}/${token.hash}/2000`;
+    axios.get(URL).then((response) => {
+      let customer = response.data.result[0].respuesta.datos.infobasica
+      let newCustomer = {
+        id_number: req.params.code,
+        name: customer.ntercero || '',
+        lastname: customer.napellido || '',
+        phone_number: customer.tcelular || 0,
+        city: customer.nmun || '',
+        neighborhood: customer.sbarrio || '',
+        address: customer.tdireccion || ''
+      }
+      res.send(newCustomer)
+    })
+  })
 }
