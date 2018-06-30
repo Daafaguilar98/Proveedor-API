@@ -52,7 +52,8 @@ module.exports = function (app) {
         return {
           document_number: order.snumsop,
           date: order.fsoport,
-          name: order.ntercero
+          name: order.ntercero,
+          id_number: order.init
         }
       });
       res.send(orders)
@@ -129,6 +130,28 @@ module.exports = function (app) {
     axios.get(URLwithData).then((response) => {
       res.send(response.data)
     });
+  })
+
+  app.get('/order/products', (req, res) => {
+    const URL = 'http://186.115.207.187:9000/datasnap/rest/TCatOperaciones/GetProductosPorReferencia/';
+    const data = JSON.stringify({
+      "itdoper": "ORD1",
+      "fsoport": req.query.date || 'PED-1806347',
+      "ireferencia": req.query.reference,
+      "bsaldos": "T"
+    });
+    const URLwithData = `${URL}${data}/${token.hash}/2000`;
+    axios.get(URLwithData).then((response) => {
+      let products = response.data.result[0].respuesta.datos.listaproductos.map(product => {
+        return {
+          code: product.irecurso,
+          quantity: parseInt(product.qrecurso),
+          price: parseInt(product.mprecio),
+          total: parseInt(product.mvrtotal)
+        }
+      })
+      res.send(products)
+    })
   })
 
 }
