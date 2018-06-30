@@ -132,6 +132,23 @@ module.exports = function (app) {
     });
   })
 
+  app.get('/order/process/:inumoper', (req, res) => {
+    const url = 'http://186.115.207.187:9000/datasnap/rest/TCatOperaciones/DoExecuteOprAction/'
+    const data = JSON.stringify({
+      "accion": "PROCESS",
+      "operaciones": [
+        {
+          "inumoper": req.params.inumoper,
+          "itdoper": "ORD1"
+        }
+      ]
+    });
+    const URLwithData = `${url}${data}/${token.hash}/2000`;
+    axios.get(URLwithData).then((response) => {
+      res.send(response.data)
+    })
+  })
+
   app.get('/order/products', (req, res) => {
     const URL = 'http://186.115.207.187:9000/datasnap/rest/TCatOperaciones/GetProductosPorReferencia/';
     const data = JSON.stringify({
