@@ -9,7 +9,7 @@ module.exports = function (app) {
   app.use(bodyParser.json())
   app.use(bodyParser.urlencoded({ extended: true }))
 
-  const productsRef = db.collection('products').orderBy('code');
+  const productsRef = db.firestore().collection('products').orderBy('code');
   let lastProduct = ''
 
   app.get('/products', (req, res) => {
