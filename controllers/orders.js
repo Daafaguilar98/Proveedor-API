@@ -12,6 +12,8 @@ const date = () => {
 };
 
 module.exports = function (app) {
+
+  // GET ORDERS
   app.get('/orders', (req, res) => {
     const URL = 'http://186.115.207.187:9000/datasnap/rest/TCatOperaciones/GetListaOperaciones/';
     const data = JSON.stringify({
@@ -53,7 +55,8 @@ module.exports = function (app) {
           document_number: order.snumsop,
           date: order.fsoport,
           name: order.ntercero,
-          id_number: order.init
+          id_number: order.init,
+          inumoper: order.inumoper
         }
       });
       res.send(orders)
@@ -132,6 +135,7 @@ module.exports = function (app) {
     });
   })
 
+  // PROCESS ORDER
   app.get('/order/process/:inumoper', (req, res) => {
     const url = 'http://186.115.207.187:9000/datasnap/rest/TCatOperaciones/DoExecuteOprAction/'
     const data = JSON.stringify({
@@ -149,6 +153,7 @@ module.exports = function (app) {
     })
   })
 
+  // GET PRODUCTS OF AN ORDER
   app.get('/order/products', (req, res) => {
     const URL = 'http://186.115.207.187:9000/datasnap/rest/TCatOperaciones/GetProductosPorReferencia/';
     const data = JSON.stringify({
@@ -169,6 +174,39 @@ module.exports = function (app) {
       })
       res.send(products)
     })
+  })
+
+  // ADD MORE PRODUCTS ON ORDER
+  app.post('/order/products/add', (req, res) => {
+    const URL = 'http://186.115.207.187:9000/datasnap/rest/TCatOperaciones/DoExecuteOprAction/';
+    const data = JSON.stringify({
+      accion: 'APPEND',
+      operaciones: [
+        {
+          itdoper: 'ORD1',
+          inumoper: req.body.inumoper || '0',
+        },
+      ],
+      oprdata: {
+        listaproductos: req.body.products.map(product => {
+          return {
+            iinventario: '1',
+            irecurso: product.code,
+            itiporec: "",
+            qrecurso: product.quantity,
+            mprecio: product.price.toString(),
+            qporcdescuento: 0,
+            qporciva: "0",
+            mvrtotal: (product.quantity*product.price).toString(),
+            sobserv: "",
+          }
+        }),
+      },
+    });
+    const URLwithData = `${URL}${data}/${token.hash}/2000`;
+    axios.get(URLwithData).then((response) => {
+      res.send({ result: response.data, params: req.body})
+    });
   })
 
 }
